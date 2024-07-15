@@ -30,7 +30,7 @@ SOFTWARE.
 ------------------------------------------------------------
 
 local moss = {}
-local META_KEY = setmetatable({}, {__tostring = function() return "[Meta]" end})
+local META_KEY = setmetatable({}, {__tostring = function() return "[Metatable]" end})
 local TREE_KEY = setmetatable({}, {__tostring = function() return "[Inheritance]" end})
 
 ------------------------------------------------------------
@@ -56,7 +56,7 @@ local mossClassMT = {
 ------------------------------------------------------------
 --- ### moss.inherit(...parents)
 --- ### moss.extend(...parents)
---- Returns a class definition table with values inherited from the given parent classes.  
+--- Returns a class definition table with values inherited from the given parent classes (or from regular tables).  
 --- Example usage:
 --- ```
 --- local Rectangle = require 'Rectangle'
@@ -71,6 +71,7 @@ function moss.inherit(...)
     local classTable = {}
 
     local allParents = {}
+    local metatable = {}
 
     for parentIndex = #parents, 1, -1 do
         local parent = parents[parentIndex]
@@ -84,12 +85,19 @@ function moss.inherit(...)
             end
         end
 
+        if parent[META_KEY] then
+            for methodName, method in pairs(parent[META_KEY]) do
+                metatable[methodName] = method
+            end
+        end
+
         for key, value in pairs(parent) do
             classTable[key] = value
         end
     end
 
     classTable[TREE_KEY] = allParents
+    classTable[META_KEY] = metatable
 
     return classTable
 end
