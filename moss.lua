@@ -85,6 +85,8 @@ function moss.inherit(...)
     local allParents = {}
     local metatable = {}
 
+    local inheritMethods = {}
+
     for parentIndex = #parents, 1, -1 do
         local parent = parents[parentIndex]
         allParents[parent] = true
@@ -105,6 +107,7 @@ function moss.inherit(...)
             for methodName, method in pairs(parent[META_KEY]) do
                 metatable[methodName] = method
             end
+            if parent[META_KEY].__inherit then inheritMethods[#inheritMethods+1] = parent[META_KEY].__inherit end
         end
 
         for key, value in pairs(parent) do
@@ -114,6 +117,10 @@ function moss.inherit(...)
 
     classTable[TREE_KEY] = allParents
     classTable[META_KEY] = metatable
+
+    for methodIndex = 1, #inheritMethods do
+        inheritMethods[methodIndex](classTable, metatable)
+    end
 
     return classTable
 end
@@ -157,6 +164,8 @@ function moss.create(class, metatable)
     class[META_KEY] = mt
 
     setmetatable(class, mossClassMT)
+
+    if mt.__create then mt.__create(class, mt) end
 
     return class
 end
