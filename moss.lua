@@ -46,7 +46,7 @@ end
 local mossClassMT = {
     __call = function (t, ...)
         local inst = setmetatable({}, t[META_KEY])
-        if inst.constructor then inst:constructor(...) end
+        if inst.init then inst:init(...) end
         return inst
     end,
     __name = "Moss Class"
@@ -77,6 +77,10 @@ function moss.inherit(...)
         local parent = parents[parentIndex]
         allParents[parent] = true
 
+        -- Technically, the annotations suggest the parent can be a function.
+        -- The parents should really only ever be tables, or tables that can be called for instancing,
+        -- but the way that's annotated does imply it can be just a function that returns a table,
+        -- so let's handle that too:
         if type(parent) == "function" then parent = parent() end
 
         if parent[TREE_KEY] then

@@ -53,11 +53,11 @@ local Button = moss.inherit( Rectangle, Clickable )
 ```
 
 # Constructors
-Constructors can be made by adding a method named "constructor".
+Constructors can be made by adding a method named "init".
 ```lua
 local Inventory = {}
 
-function Inventory:constructor(items)
+function Inventory:init(items)
     self.items = {}
     for index, value in ipairs(items) do
         self.items[index] = value
@@ -76,7 +76,7 @@ local Vector2Mt = {}
 Vector2.x = 0
 Vector2.y = 0
 
-function Vector2:constructor(x, y)
+function Vector2:init(x, y)
     self.x = x or self.x
     self.y = y or self.y
 end
