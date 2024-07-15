@@ -43,11 +43,23 @@ local function copyTo(source, target)
     return target
 end
 
+--- Creates a new instance of a Moss class, bypassing the `__new` method (if any) and just using the default Moss one.  
+--- You probably don't have to worry about this method, but its one good use is if you're implementing the `__new` method, and in it, you want to use the default Moss instancing.
+---@param class table|fun(): table The class to instance
+---@param ... unknown Arguments for the constructor
+---@return table
+function moss.generateInstance(class, ...)
+    local inst = setmetatable({}, class[META_KEY])
+    if inst.init then inst:init(...) end
+    return inst
+end
+
 local mossClassMT = {
     __call = function (t, ...)
-        local inst = setmetatable({}, t[META_KEY])
-        if inst.init then inst:init(...) end
-        return inst
+        local metatable = t[META_KEY]
+        if metatable and metatable.__new then return metatable.__new(t, metatable, ...) end
+
+        return moss.generateInstance(t, ...)
     end,
     __name = "Moss Class"
 }
