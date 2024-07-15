@@ -165,7 +165,7 @@ end
 ---@param class table|fun(): table The class to check for
 ---@return boolean
 function moss.is(instance, class)
-    return instance[TREE_KEY][class] or false
+    return instance[TREE_KEY] and instance[TREE_KEY][class] or false
 end
 moss.implements = moss.is
 
