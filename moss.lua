@@ -69,6 +69,9 @@ local mossClassMT = {
 
         return moss.generateInstance(t, ...)
     end,
+    __tostring = function (t)
+        return t[META_KEY] and t[META_KEY].__name or "Moss Class"
+    end,
     __name = "Moss Class"
 }
 ------------------------------------------------------------
@@ -125,6 +128,7 @@ function moss.inherit(...)
         end
     end
 
+    metatable.__name = nil -- Don't inherit class names for clarity
     classTable[TREE_KEY] = allParents
     classTable[META_KEY] = metatable
 
@@ -227,7 +231,7 @@ function BaseClass:init() end
 --- You can optionally inherit from this class to get a base for your classes.  
 --- Has basic type checking methods and an empty constructor,
 --- so all classes inheriting from this one are guaranteed to have a constructor.
-moss.BaseClass = moss.create(BaseClass)
+moss.BaseClass = moss.create(BaseClass, {__name = "MossBaseClass"})
 ------------------------------------------------------------
 
 return moss
