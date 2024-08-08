@@ -54,6 +54,14 @@ function moss.generateInstance(class, ...)
     return inst
 end
 
+--- Returns the metatable which the instances of the given moss class get assigned.  
+--- You most likely won't need to use this method for most purposes, but it's here anyway since otherwise it's a bit awkward to get access to this metatable.
+---@param class table|fun(): table The class definition
+---@return table Metatable The metatable used by the class' instances
+function moss.getInstanceMetatable(class)
+    return class[META_KEY]
+end
+
 local mossClassMT = {
     __call = function (t, ...)
         local metatable = t[META_KEY]
@@ -151,7 +159,7 @@ moss.extend = moss.inherit
 ---@generic T
 ---@param class T A table defining the class' default values and methods
 ---@param metatable? table An optional metatable to be given to instances of this class
----@return table|fun(...): T
+---@return table|fun(...: unknown): T
 function moss.create(class, metatable)
     local mt = {}
     copyTo(class[META_KEY], mt)
