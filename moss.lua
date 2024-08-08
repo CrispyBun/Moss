@@ -173,6 +173,7 @@ end
 ------------------------------------------------------------
 --- ### moss.is(instance, class)
 --- ### moss.implements(instance, class)
+--- ### moss.instanceof(instance, class)
 --- Checks if an instance was instanced from a class, or from a child of the class.  
 --- Example usage:
 --- ```
@@ -189,5 +190,17 @@ function moss.is(instance, class)
     return instance[TREE_KEY] and instance[TREE_KEY][class] or false
 end
 moss.implements = moss.is
+moss.instanceof = moss.is
+
+------------------------------------------------------------
+--- ### moss.type(instance)
+--- ### moss.typeof(instance)
+--- Returns the class definition the given moss instance was instanced from
+---@param instance table
+---@return table|fun(): table class The class definition
+function moss.type(instance)
+    return instance[META_KEY] and instance[META_KEY].__index
+end
+moss.typeof = moss.type
 
 return moss
