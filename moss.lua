@@ -83,6 +83,8 @@ local mossClassMT = {
 --- local Clickable = require 'Clickable'
 --- 
 --- local Button = moss.inherit( Rectangle, Clickable )
+--- 
+--- return moss.create(Button)
 --- ```
 ---@param ... table|fun(): table The classes to inherit from
 ---@return table class
@@ -210,5 +212,22 @@ function moss.type(instance)
     return instance[META_KEY] and instance[META_KEY].__index
 end
 moss.typeof = moss.type
+
+------------------------------------------------------------
+--- A basic class which can be used as a base for other classes.  
+--- Has basic type checking methods and an empty constructor.
+---@class Moss.BaseClass
+local BaseClass = {}
+
+BaseClass.is = moss.is
+BaseClass.implements = moss.implements
+BaseClass.type = moss.type
+function BaseClass:init() end
+
+--- You can optionally inherit from this class to get a base for your classes.  
+--- Has basic type checking methods and an empty constructor,
+--- so all classes inheriting from this one are guaranteed to have a constructor.
+moss.BaseClass = moss.create(BaseClass)
+------------------------------------------------------------
 
 return moss
