@@ -84,7 +84,7 @@ function Vector2:init(x, y)
 end
 
 function Vector2Mt.__tostring(v)
-    return(string.format("(%s, %s)", v.x, v.y))
+    return string.format("(%s, %s)", v.x, v.y)
 end
 
 function Vector2Mt.__add(a, b)
