@@ -33,7 +33,20 @@ local moss = {}
 local META_KEY = setmetatable({}, {__tostring = function() return "[Metatable]" end})
 local TREE_KEY = setmetatable({}, {__tostring = function() return "[Inheritance]" end})
 
+-- If true, when inheriting from multiple classes, and the library finds
+-- different implementations for the same method in the child's direct parents, it will force the child class
+-- to disambiguate the methods by overriding and defining them itself.  
+-- (If it doesn't, the methods will be replaced by a dummy function that errors if you try to use it.)
+--
+-- This may have undesirable results if you mix function types with other types for the same key in a class tree.
+moss.diamondDisambiguation = false
+
 ------------------------------------------------------------
+
+local function ambiguousMethodError()
+    error("The method called is ambiguous due to it being implemented differently in multiple parent classes. It must be overridden in the inheriting class to disambiguate it.", 2)
+end
+
 local function copyTo(source, target)
     if source then
         for key, value in pairs(source) do
@@ -98,7 +111,10 @@ function moss.inherit(...)
     local allParents = {}
     local metatable = {}
 
+    local seenMethods = {}
     local inheritMethods = {}
+
+    local forcedValues = {}
 
     for parentIndex = #parents, 1, -1 do
         local parent = parents[parentIndex]
@@ -125,12 +141,24 @@ function moss.inherit(...)
 
         for key, value in pairs(parent) do
             classTable[key] = value
+
+            if moss.diamondDisambiguation and type(value) == "function" then
+                if seenMethods[key] and seenMethods[key] ~= value then
+                    forcedValues[key] = ambiguousMethodError
+                elseif not seenMethods[key] then
+                    seenMethods[key] = value
+                end
+            end
         end
     end
 
     metatable.__name = nil -- Don't inherit class names for clarity
     classTable[TREE_KEY] = allParents
     classTable[META_KEY] = metatable
+
+    for key, value in pairs(forcedValues) do
+        classTable[key] = value
+    end
 
     for methodIndex = 1, #inheritMethods do
         inheritMethods[methodIndex](classTable, metatable)
