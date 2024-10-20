@@ -127,6 +127,64 @@ local Message = require 'class.Message'
 local inst = Message()
 ```
 
+# Diamond disambiguation
+Since Moss allows for multiple inheritance, it provides a feature to ease possible [diamond problem](https://en.wikipedia.org/wiki/Multiple_inheritance#The_diamond_problem) issues.
+
+You can set the `moss.diamondDisambiguation` setting to true (one time, when requiring moss for the first time):
+```lua
+local moss = require 'moss'
+moss.diamondDisambiguation = true
+```
+If this is set to true, making a class inherit from multiple classes that implement a method under the same name requires that you disambiguate the method by overriding it in the new class. If you don't, attempting to use the method will error.
+
+```lua
+local Vector2 = {}
+
+Vector2.x = 0
+Vector2.y = 0
+
+function Vector2:print()
+    print(self.x, self.y)
+end
+
+return moss.create(Vector2)
+```
+```lua
+local GraphNode = {}
+
+function GraphNode:init()
+    self.childNodes = {}
+end
+
+function GraphNode:print()
+    print("Node")
+end
+
+return moss.create(GraphNode)
+```
+```lua
+local PositionedNode = moss.inherit(Vector2, GraphNode)
+
+return moss.create(PositionedNode)
+```
+```lua
+local node = PositionedNode()
+node:print()
+-- If diamondDisambiguation is on, this will error, since PositionedNode doesn't specify which "print" method should be inherited.
+-- If it is off, however, the print method of "Vector2" will be used, as it's listed first in the inheritance list.
+```
+To disambiguate the above method, it needs to be defined in `PositionedNode`. This can either be a new function, or it can simply select one from the parents, like so:
+```lua
+local PositionedNode = moss.inherit(Vector2, GraphNode)
+
+PositionedNode.print = GraphNode.print -- Disambiguate
+
+return moss.create(PositionedNode)
+```
+
+Diamond disambiguation only checks for multiple definitions of a *function*.
+If the inherited classes all contain a field with different values, and none, or only one of them is a function, the first in the list of inheritance is used, without any ambiguity errors.
+
 # Advanced features
 Moss provides the ability to change how it behaves with certain classes using its own special metamethods.
 
