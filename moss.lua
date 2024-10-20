@@ -175,15 +175,15 @@ moss.extend = moss.inherit
 --- ### moss.create(class)
 --- Sets the necessary metatable properties of the class and returns it.  
 --- Calling the class ( `class()` ) after this will create an instance of it.  
+--- 
 --- Example usage:  
---- ---
 --- #### Player.lua
 --- ```
 --- local moss = require 'moss'
 ---
 --- local Player = {}
---- player.x = 0
---- player.y = 0
+--- Player.x = 0
+--- Player.y = 0
 ---
 --- return moss.create(Player)
 --- ```
