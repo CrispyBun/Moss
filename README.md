@@ -127,7 +127,7 @@ local Message = require 'class.Message'
 local inst = Message()
 ```
 
-# No feature creep
+# No feature creep (mostly)
 Moss is made to be lightweight, and to leave the way it's used up to your own convention.
 
 For example, Moss doesn't have anything called an Interface, but you could use a convention to use interfaces with Moss easily anyway. One good way is to use the "`IName`" naming convention for interfaces, and have their methods be placeholders that are meant to always be replaced. Then, you can simply use Moss' multiple inheritance feature, but only ever for interfaces.
@@ -202,15 +202,17 @@ If the inherited classes all contain a field with different values, and none, or
 # Advanced features
 Moss provides the ability to change how it behaves with certain classes using its own special metamethods.
 
-I do recommend having a gist of how the internals of the library work to use these though, as the advanced features allow you to do weird things and break stuff.
-Also, these totally violate many OOP principles.
+This is a bit of a danger zone - these metamethods allow you to do unhinged things, shoot yourself in the foot, and violate just about every OOP principle.
+These features are partially here to serve as an agent of chaos, but they do have their uses (re: examples section).
+
+You should probably have a gist of how the library works before using any of this.
 
 ## __new
 ```lua
 function meta.__new(class, metatable, ...)
 ```
 If a class' metatable has the `__new` metamethod, when moss is tasked to create the instance of the class (by calling the class table),
-it calls this metamethod instead of instancing it itself. The function should then return the new instance. (this means that, if you really want to, you can return something completely different instead of the actual class' instance)
+it calls this metamethod instead of instancing it itself. The function should then return the new instance (this means that, if you really want to, you can return something completely different instead of the actual class' instance).
 
 The function is passed the class that is being instanced, the metatable that should be used for the class' instances, and a vararg of arguments passed into the constructor.
 
@@ -253,14 +255,14 @@ function meta.__create(class, metatable)
 ```
 The `__create` metamethod works similarly to the `__inherit` metamethod, but is simply called when this class is created (that is, when `moss.create()` is called on it).
 
-While may seem there's not much point in that, do note that metamethods are inherited too, so any class that inherits from this class will *also* call this function whenever it's created. This can be used to define some rules that a class must follow if it inherits from this class, or inject fields based on what fields a class already has.
+While it may seem there's not much point in that, do note that metamethods are inherited too, so any class that inherits from this class will *also* call this function whenever it's created. This can be used to define some rules that a class must follow if it inherits from this class, or inject fields based on what fields a class already has.
 
 ```lua
 function meta.__create(class, metatable)
     -- Classes implementing this class will not have this variable defined, no matter what
     class.forbidden = nil
 
-    -- Classes implementing this class must have either both width and height variables, or neither - they cannot have just one
+    -- Classes implementing this class must have either both width and height variables, or neither - they will never have just one
     if class.width and not class.height then class.height = 0 end
     if class.height and not class.width then class.width = 0 end
 end
