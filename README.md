@@ -127,6 +127,20 @@ local Message = require 'class.Message'
 local inst = Message()
 ```
 
+# No feature creep
+Moss is made to be lightweight, and to leave the way it's used up to your own convention.
+
+For example, Moss doesn't have anything called an Interface, but you could use a convention to use interfaces with Moss easily anyway. One good way is to use the "`IName`" naming convention for interfaces, and have their methods be placeholders that are meant to always be replaced. Then, you can simply use Moss' multiple inheritance feature, but only ever for interfaces.
+```lua
+local IPrintable = {}
+
+function IPrintable:print()
+    error("Not implemented")
+end
+
+return moss.create(IPrintable)
+```
+
 # Diamond disambiguation
 Since Moss allows for multiple inheritance, it provides a feature to ease possible [diamond problem](https://en.wikipedia.org/wiki/Multiple_inheritance#The_diamond_problem) issues.
 
