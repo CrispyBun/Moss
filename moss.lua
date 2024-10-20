@@ -33,6 +33,9 @@ local moss = {}
 local META_KEY = setmetatable({}, {__tostring = function() return "[Metatable]" end})
 local TREE_KEY = setmetatable({}, {__tostring = function() return "[Inheritance]" end})
 
+moss.META_KEY = META_KEY -- Used to get the metatable of classes. There's not many uses for using this, but it's exposed anyway.
+moss.TREE_KEY = TREE_KEY -- Used to get the inheritance information of classes. There's not many uses for using this, but it's exposed anyway.
+
 -- If true, when inheriting from multiple classes, and the library finds
 -- different implementations for the same method in the child's direct parents, it will force the child class
 -- to disambiguate the methods by overriding and defining them itself.  
