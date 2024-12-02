@@ -265,4 +265,49 @@ function BaseClass:init() end
 moss.BaseClass = moss.create(BaseClass, {__name = "MossBaseClass"})
 ------------------------------------------------------------
 
+-- Class commons compat:
+-- (https://github.com/bartbes/Class-Commons)
+
+---@diagnostic disable-next-line: undefined-global
+if not common then
+    ---@diagnostic disable-next-line: lowercase-global
+    common = {}
+
+    ---@generic T
+    ---@param name string? The name of the class
+    ---@param table T The class definition
+    ---@param ... table|fun(): table The classes to inherit from
+    ---@return table|fun(...: unknown): T class The instancable class
+    function common.class(name, table, ...)
+        local base = moss.inherit(...)
+
+        -- Class commons inherits when creating the class, moss requires it to be done beforehand,
+        -- so the best solution is to just inject the fields as if they were inherited first:
+        for key, value in pairs(base) do
+            table[key] = table[key] == nil and value or table[key]
+        end
+
+        return moss.create(table, {__name = name})
+    end
+
+    ---@generic T
+    ---@param class T The class to instance
+    ---@param ... unknown Arguments for the constructor
+    ---@return T
+    function common.instance(class, ...)
+        return class(...)
+    end
+
+    -- This isn't in the standard but why not add it anyway:
+
+    ---@param instance table The instance to check
+    ---@param class table|fun(): table The class to check for
+    ---@return boolean
+    function common.instanceof(instance, class)
+        return moss.is(instance, class)
+    end
+end
+
+------------------------------------------------------------
+
 return moss
