@@ -202,19 +202,18 @@ If the inherited classes all contain a field with different values, and none, or
 # Advanced features
 Moss provides the ability to change how it behaves with certain classes using its own special metamethods.
 
-This is a bit of a danger zone - these metamethods allow you to do unhinged things, shoot yourself in the foot, and violate just about every OOP principle.
-These features are partially here to serve as an agent of chaos, but they do have their uses (re: examples section).
+This is a bit of a danger zone - these metamethods can allow you to shoot yourself in the foot quite a bit.
 
-You should probably have a gist of how the library works before using any of this.
+You should probably have a gist of how the library works before using these.
 
 ## __new
 ```lua
 function meta.__new(class, metatable, ...)
 ```
-If a class' metatable has the `__new` metamethod, when moss is tasked to create the instance of the class (by calling the class table),
+If a class' metatable has the `__new` metamethod, when moss is tasked to create the instance of the class,
 it calls this metamethod instead of instancing it itself. The function should then return the new instance (this means that, if you really want to, you can return something completely different instead of the actual class' instance).
 
-The function is passed the class that is being instanced, the metatable that should be used for the class' instances, and a vararg of arguments passed into the constructor.
+The function is passed the class definition that is being instanced, the metatable that should be used for the class' instances, and a vararg of arguments passed into the constructor.
 
 To actually create a proper instance, you can make a new table, set its metatable to the metatable passed as an argument, and call the constructor if there is one.
 Or, you can use the `moss.generateInstance(class, ...)` function, which does exactly that.
@@ -235,7 +234,7 @@ end
 ```lua
 function meta.__inherit(class, metatable)
 ```
-The `__inherit` metamethod acts not on instances, but on classes themselves. If a class has this metamethod, when another class inherits from it, this metamethod is called. It receives the class that's inheriting this one, and the metatable of that class' instances.
+The `__inherit` metamethod acts not on instances, but on class definitions themselves. If a class has this metamethod, when another class inherits from it, this metamethod is called. It receives the class that's inheriting this one, and the metatable of that class' instances.
 
 This can be used to inject values into the definition of inheriting classes that aren't actually defined in the base class.
 
@@ -253,16 +252,19 @@ end
 ```lua
 function meta.__create(class, metatable)
 ```
-The `__create` metamethod works similarly to the `__inherit` metamethod, but is simply called when this class is created (that is, when `moss.create()` is called on it).
+The `__create` metamethod works similarly to the `__inherit` metamethod, but is simply called when the class is created (that is, when `moss.create()` is called).
 
-While it may seem there's not much point in that, do note that metamethods are inherited too, so any class that inherits from this class will *also* call this function whenever it's created. This can be used to define some rules that a class must follow if it inherits from this class, or inject fields based on what fields a class already has.
+The main difference from the `__inherit` metamethod is that it gets called *after* the class defines all of its new fields, rather than before, meaning that through `__create`, you can see and even overwrite fields that were explicitly defined in the class currently being created.
+
+This can be used to define some rules that a class must follow if it implements this class, or inject fields based on what fields a class already has.
 
 ```lua
 function meta.__create(class, metatable)
     -- Classes implementing this class will not have this variable defined, no matter what
+    -- (though a better option might be an error rather than silently setting the field to `nil`)
     class.forbidden = nil
 
-    -- Classes implementing this class must have either both width and height variables, or neither - they will never have just one
+    -- Classes implementing this class will always have either both width and height variables, or neither - they will never have just one
     if class.width and not class.height then class.height = 0 end
     if class.height and not class.width then class.width = 0 end
 end
