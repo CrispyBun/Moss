@@ -30,8 +30,8 @@ SOFTWARE.
 ------------------------------------------------------------
 
 local moss = {}
-local META_KEY = setmetatable({}, {__tostring = function() return "[Metatable]" end, __uniquereference = true})
-local TREE_KEY = setmetatable({}, {__tostring = function() return "[Inheritance]" end, __uniquereference = true})
+local META_KEY = setmetatable({}, {__tostring = function() return "[Metatable]" end})
+local TREE_KEY = setmetatable({}, {__tostring = function() return "[Inheritance]" end})
 
 moss.META_KEY = META_KEY -- Used to get the metatable of classes. There's not many uses for using this, but it's exposed anyway.
 moss.TREE_KEY = TREE_KEY -- Used to get the inheritance information of classes. There's not many uses for using this, but it's exposed anyway.
@@ -88,8 +88,7 @@ local mossClassMT = {
     __tostring = function (t)
         return t[META_KEY] and t[META_KEY].__name or "Moss Class"
     end,
-    __name = "Moss Class",
-    __uniquereference = true -- <- compat with the Compost library
+    __name = "Moss Class"
 }
 ------------------------------------------------------------
 
