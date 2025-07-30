@@ -4,34 +4,10 @@ Moss is a library which was mainly made to ease the usual required boilerplate t
 It also adds other features, though, such as constructors or checking if a class instance was instanced from a certain class.
 
 # Boilerplate soothing
-Here is vanilla lua code (assuming this is in `class/Enemy.lua`):  
+Here's what a basic class definition might look like in Moss:
 ```lua
-local Entity = require 'class.Entity'
+-- class/Enemy.lua
 
-local Enemy = {}
-local EnemyMetatable = {}
-setmetatable(Enemy, EnemyMetatable)
-
--- Inheritance
-EnemyMetatable.__index = Entity
-
--- Class' methods
-function Enemy:hurt(damage)
-    -- override existing method
-    -- but still call the original
-    Entity.hurt(self, damage)
-    print("damaged enemy")
-end
-
--- Make it possible to be instanced
-EnemyMetatable.__call = function()
-  return setmetatable({}, {__index = Enemy})
-end
-
-return Enemy
-```
-And here's how you can achieve the same effect with Moss:
-```lua
 local moss = require 'moss'
 local Entity = require 'class.Entity'
 
@@ -40,12 +16,18 @@ local Enemy = moss.inherit( Entity ) -- Or moss.extend( Entity )
 
 -- Class' methods
 function Enemy:hurt(damage)
-    Entity.hurt(self, damage)
+    Entity.hurt(self, damage) -- call the original method in the overridden one
     print("damaged enemy")
 end
 
 -- Make it possible to be instanced
 return moss.create(Enemy)
+```
+
+The class is then instanced like so:
+```lua
+local Enemy = require 'class.Enemy'
+local instance = Enemy()
 ```
 
 # Multiple inheritance
@@ -73,7 +55,7 @@ Metamethods can still be implemented similarly to the vanilla Lua way.
 local moss = require 'moss'
 
 local Vector2 = {}
-local Vector2Mt = {}
+local Vector2MT = {}
 
 Vector2.x = 0
 Vector2.y = 0
@@ -83,15 +65,15 @@ function Vector2:init(x, y)
     self.y = y or self.y
 end
 
-function Vector2Mt.__tostring(v)
+function Vector2MT.__tostring(v)
     return string.format("(%s, %s)", v.x, v.y)
 end
 
-function Vector2Mt.__add(a, b)
+function Vector2MT.__add(a, b)
     return Vector2(a.x + b.x, a.y + b.y)
 end
 
-return moss.create(Vector2, Vector2Mt) -- Pass the metatable as the second argument
+return moss.create(Vector2, Vector2MT) -- Pass the metatable as the second argument
 ```
 
 # is
