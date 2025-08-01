@@ -174,7 +174,7 @@ moss.extend = moss.inherit
 ------------------------------------------------------------
 --- ### moss.create(class)
 --- Sets the necessary metatable properties of the class and returns it.  
---- Calling the class ( `class()` ) after this will create an instance of it.  
+--- Calling the class definition ( `Class()` ) after this will create an instance of it.  
 --- 
 --- Example usage:  
 --- #### Player.lua
@@ -196,7 +196,7 @@ moss.extend = moss.inherit
 ---@generic T
 ---@param class T A table defining the class' default values and methods
 ---@param metatable? table An optional metatable to be given to instances of this class
----@return table|fun(...: unknown): T
+---@return T|fun(...: unknown): T
 function moss.create(class, metatable)
     local mt = {}
     copyTo(class[META_KEY], mt)
