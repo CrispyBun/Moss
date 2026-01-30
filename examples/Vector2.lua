@@ -7,7 +7,7 @@ local moss = require 'moss'
 ---@field x number
 ---@field y number
 local Vector2 = {}
-local Vector2Mt = {__name = "Vector2"}
+local Vector2MT = {__name = "Vector2"}
 
 ---@param x? number
 ---@param y? number
@@ -46,18 +46,18 @@ function Vector2:isEqual(otherVector)
 end
 
 ---@param v Vector2
-function Vector2Mt.__tostring(v)
+function Vector2MT.__tostring(v)
     return v:stringify()
 end
 
 ---@param a Vector2
 ---@param b Vector2
 ---@return Vector2
-function Vector2Mt.__add(a, b)
+function Vector2MT.__add(a, b)
     return a:add(b)
 end
 
-function Vector2Mt.__mul(a, b)
+function Vector2MT.__mul(a, b)
     -- Have the `*` operator support `Vector * Vector`, `Vector * number` and `number * Vector`
 
     if type(a) == "table" and type(b) == "table" and moss.is(a, Vector2) and moss.is(b, Vector2) then
@@ -73,8 +73,8 @@ end
 
 ---@param a Vector2
 ---@param b Vector2
-function Vector2Mt.__eq(a, b)
+function Vector2MT.__eq(a, b)
     return a:isEqual(b)
 end
 
-return moss.create(Vector2, Vector2Mt)
+return moss.create(Vector2, Vector2MT)
