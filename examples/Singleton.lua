@@ -5,7 +5,7 @@ local moss = require 'lib.moss'
 -- will (as long as it doesn't override the `__new` special metamethod)
 -- act as a singleton and instancing it multiple times will always yield the same instance.
 
----@class util.Singleton
+---@class Singleton
 local Singleton = {}
 local SingletonMT = {__name = "Singleton"}
 
